@@ -1,6 +1,53 @@
-# AQLM + OA-EM
+# OA-EM: Output-Aware EM Initialisation for Additive Quantization of LLMs
 
-This repository extends [AQLM](https://github.com/Vahe1994/AQLM) with **Output-Aware EM (OA-EM) initialization** for improved codebook quality at extreme compression rates (2bpp). See [REPRODUCE.md](REPRODUCE.md) for experiment reproduction instructions.
+[![arXiv](https://img.shields.io/badge/arXiv-2604.08118-b31b1b.svg)](https://arxiv.org/abs/2604.08118)
+[![Models](https://img.shields.io/badge/HuggingFace-Models-yellow)](https://huggingface.co/kennedyian94)
+
+This repository contains the official code for:
+
+> **Initialisation Determines the Basin: Efficient Codebook Optimisation for Extreme LLM Quantization**
+> Ian W. Kennedy and Nafise Sadat Moosavi, University of Sheffield
+> [arXiv:2604.08118](https://arxiv.org/abs/2604.08118)
+
+We extend [AQLM](https://github.com/Vahe1994/AQLM) (Egiazarian et al., 2024) with **OA-EM**, an output-aware EM initialisation that replaces greedy codebook placement with Hessian-weighted Mahalanobis distance, fixing catastrophic degradation at 2-bit precision while preserving AQLM's O(1) lookup-table dequantization.
+
+## Key Results
+
+At 2 bpp on Llama 3.2 3B (WikiText-2 perplexity, post-PV-tuning):
+
+| Init | b=4 | b=8 | b=16 | Q-time (b=4) |
+|------|-----|-----|------|---------------|
+| Greedy | 12.66 | 11.76 | 12.01 | 6.1h |
+| **OA-EM** | **11.53** | **11.53** | **11.49** | 6.1h |
+
+OA-EM at beam 4 (6.1h) outperforms the greedy baseline at beam 16 (16.9h) — a 2.8x speedup. Results hold across Llama 3.1 8B and Qwen 2.5 3B. See the [paper](https://arxiv.org/abs/2604.08118) for full analysis.
+
+## Pre-Quantized Models
+
+PV-tuned 2-bit models ready for inference (4096 context):
+
+| Model | HuggingFace | Post-PV Wiki-2 |
+|-------|-------------|----------------|
+| Llama 3.2 3B | [kennedyian94/Llama-3.2-3B-AQLM-OA-EM-2Bit-2x8](https://huggingface.co/kennedyian94/Llama-3.2-3B-AQLM-OA-EM-2Bit-2x8) | 11.53 |
+| Llama 3.1 8B | [kennedyian94/Llama-3.1-8B-AQLM-OA-EM-2Bit-2x8](https://huggingface.co/kennedyian94/Llama-3.1-8B-AQLM-OA-EM-2Bit-2x8) | 9.25 |
+| Qwen 2.5 3B | [kennedyian94/Qwen-2.5-3B-AQLM-OA-EM-2Bit-2x8](https://huggingface.co/kennedyian94/Qwen-2.5-3B-AQLM-OA-EM-2Bit-2x8) | 10.73 |
+
+Requires the `aqlm` inference library: `pip install aqlm[gpu]`
+
+## Reproducing Results
+
+See [REPRODUCE.md](REPRODUCE.md) for step-by-step instructions to reproduce all paper experiments.
+
+## Citation
+
+```bibtex
+@article{kennedy2026oaem,
+  title={Initialisation Determines the Basin: Efficient Codebook Optimisation for Extreme LLM Quantization},
+  author={Kennedy, Ian W. and Moosavi, Nafise Sadat},
+  journal={arXiv preprint arXiv:2604.08118},
+  year={2026}
+}
+```
 
 ---
 
